@@ -10,5 +10,10 @@ namespace Snap
         public IRemoteServerProvider<T> RemoteServerProvider { get; set; }
 
         public Action<Action>? CustomStartup { get; set; }
+
+        public SnapServer<T> ConfigureServer()
+        {
+            return new SnapServer<T>(this);
+        }
     }
 }
