@@ -26,11 +26,11 @@ namespace SnapAbstractionsExample
         }
     
        //This method must write ALL data
-        public void WriteData()
+        public void WriteData(ExampleObject[] data)
         {
             using (var fs = new FileStream(_path, FileMode.Open))
             {
-                var json = JsonSerializer.Serialize<ExampleObject[]>();
+                var json = JsonSerializer.Serialize(data);
                 var bytes = Encoding.UTF8.GetBytes(json);
                 
                 fs.Write(bytes, 0, bytes.Length);
@@ -84,14 +84,14 @@ namespace SnapAbstractionsExample
         }    
     }
     
-    public class ApiServerProvider : IRemoteServerProvider<ExampleObject>
+    public class ApiServerProvider : IRemoteServerProvider<ExampleObject[]>
     {
         private readonly HttpClient _client = new HttpClient()
         {
             BaseAddress = "https://example.com"
         };                
     
-        public SnapRemoteResult<ExampleObject> SendData(ExampleObject obj)
+        public SnapRemoteResult<ExampleObject[]> SendData(ExampleObject obj)
         {
             var json = JsonSerializer.Serialize(obj);
             
@@ -101,35 +101,35 @@ namespace SnapAbstractionsExample
             
             if(result.StatusCode != 200) 
             {            
-                return new SnapRemoteResult<ExampleObject>()
+                return new SnapRemoteResult<ExampleObject[]>()
                 {
                     Ok = false                
                 };
             }
             
-            return new SnapRemoteResult<ExampleObject>()
+            return new SnapRemoteResult<ExampleObject[]>()
             {
                 Ok = true,
                 Object = JsonSerializer.Deserialize<ExampleObject>(result.ReadAsString())                
             }; 
         }
         
-        public SnapRemoteResult<ExampleObject> GetData()
+        public SnapRemoteResult<ExampleObject[]> GetData()
         {                       
             var result = _client.Post("/api/get", json);
             
             if(result.StatusCode != 200) 
             {            
-                return new SnapRemoteResult<ExampleObject>()
+                return new SnapRemoteResult<ExampleObject[]>()
                 {
                     Ok = false                
                 };
             }
             
-            return new SnapRemoteResult<ExampleObject>()
+            return new SnapRemoteResult<ExampleObject[]>()
             {
                 Ok = true,
-                Object = JsonSerializer.Deserialize<ExampleObject>(result.ReadAsString())                
+                Object = JsonSerializer.Deserialize<ExampleObject[]>(result.ReadAsString())                
             }; 
         }
     }
@@ -149,7 +149,7 @@ public class Program
 
     public static void Main(string[] args)
     {
-        var snapConfig = new SnapConfiguration<ExampleObject>()
+        var snapConfig = new SnapConfiguration<ExampleObject[]>()
         {
             DeltasSpaceProvider = new DeltasDataFileProvider(),
             CacheSpaceProvider = new CachedDataFileProvider(),
