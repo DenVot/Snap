@@ -7,6 +7,7 @@ Snap is service, which provide abstractions to manage cached information.
 ```c#
 using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using Snap.Remoting;
 using Snap.Abstractions;
@@ -96,7 +97,7 @@ namespace SnapAbstractionsExample
             
             var content = new StringContent(json);
             
-            var result = _client.Post("/api/post", json);
+            var result = _client.Post("/api/post", content);
             
             if(result.StatusCode != 200) 
             {            
